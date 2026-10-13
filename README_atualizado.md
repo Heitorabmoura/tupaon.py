@@ -30,36 +30,6 @@ Utilizar a tecnologia para facilitar o acesso a informações sobre os povos ori
 - **`re`:** validação do formato do e-mail por expressão regular.
 - **`pathlib`:** manipulação do caminho do arquivo de dados.
 
-## Como executar
-
-### Requisitos
-
-- Python 3 instalado.
-- Biblioteca Pygame instalada.
-
-### Instalação
-
-1. Baixe ou clone o repositório do projeto.
-2. Abra um terminal na pasta do projeto.
-3. Instale o Pygame:
-
-   ```bash
-   python -m pip install pygame
-   ```
-
-4. Execute o aplicativo:
-
-   ```bash
-   python tupa_corrigido.py
-   ```
-
-   Se o comando `python` não funcionar no Windows, tente:
-
-   ```bash
-   py tupa_corrigido.py
-   ```
-
-> Se o arquivo principal tiver outro nome no repositório, substitua `tupa_corrigido.py` pelo nome correto.
 
 ## Armazenamento de usuários
 
