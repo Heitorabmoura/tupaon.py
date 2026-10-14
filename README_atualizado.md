@@ -54,3 +54,16 @@ Estudantes, professores e pessoas interessadas em conhecer mais sobre os povos o
 ## Status
 
 Em desenvolvimento.
+
+
+Arquivos
+main.py: ponto de entrada e menu principal.
+configuracoes.py: janela, cores e fontes compartilhadas.
+interface.py: funções visuais reutilizáveis e quebra de texto.
+armazenamento.py: validação, hash de senhas e arquivo de usuários.
+cadastro.py: tela de cadastro.
+login.py: tela de login.
+area_usuario.py: tela após login.
+pesquisas.py: busca e conteúdo sobre povos indígenas.
+quiz.py: quiz educativo.
+usuarios.json: será criado quando o primeiro usuário for cadastrado.
