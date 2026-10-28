@@ -1,0 +1,18 @@
+[
+  {
+    "nome": "Heitor",
+    "email": "heitoralvesbmoura@gmail.com",
+    "senha": {
+      "salt": "e038f343e4cd01b3ee500c38e27070af",
+      "hash": "f961022cdc5b4b57266a9e50006a6fc109e87d276abfd2c7b3bef4c4280d17aa"
+    }
+  },
+  {
+    "nome": "Heitor",
+    "email": "heitor.alves@ufrpe.com",
+    "senha": {
+      "salt": "4ff03d031ce88086a9284730f267a172",
+      "hash": "e172dc12ca9b1cbb1b28d3a0847228c4e7ceccbc8e541b306a37a9e6f02deb9f"
+    }
+  }
+]
