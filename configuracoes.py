@@ -15,6 +15,7 @@ VERMELHO_CLARO = (200, 50, 50)
 VERDE = (50, 160, 70)
 CINZA = (90, 90, 90)
 CINZA_CLARO = (190, 190, 190)
+DOURADO = (235, 190, 40)
 
 fonte_titulo = pygame.font.Font(None, 62)
 fonte_texto = pygame.font.Font(None, 32)

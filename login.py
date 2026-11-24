@@ -3,7 +3,7 @@ import pygame
 from configuracoes import (
     tela, FUNDO, BRANCO, CINZA, CINZA_CLARO, fonte_titulo, fonte_pequena, fonte_menor
 )
-from armazenamento import verificar_login
+from usuarios import verificar_login
 from area_usuario import tela_principal_usuario
 from interface import (botao, campo_texto, desenhar_centralizado,
                        desenhar_texto, desenhar_mensagem, encerrar)

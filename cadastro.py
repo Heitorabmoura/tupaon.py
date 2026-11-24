@@ -1,12 +1,44 @@
-"""Tela de criação de conta."""
+"""Tela de criação de conta, com verificação ao vivo dos requisitos de cada campo."""
 import pygame
 from configuracoes import (
     tela, FUNDO, BRANCO, VERDE, CINZA, CINZA_CLARO, fonte_titulo,
     fonte_pequena, fonte_menor
 )
-from armazenamento import cadastrar_usuario
-from interface import (botao, campo_texto, desenhar_centralizado,
-                       desenhar_texto, desenhar_mensagem, encerrar)
+from area_usuario import tela_principal_usuario
+from usuarios import cadastrar_usuario, verificar_login
+from validacao import (
+    erros_cadastro, resumir_erros,
+    regras_nome, regras_email, regras_senha, regras_confirmacao
+)
+from interface import (botao, campo_texto, desenhar_centralizado, desenhar_texto,
+                       desenhar_mensagem, desenhar_regra, encerrar)
+
+
+def desenhar_painel_requisitos(nome, email, senha, confirmar, tentou):
+    """Mostra, para cada campo, quais requisitos já foram cumpridos (verde) e quais não (vermelho).
+    Campo vazio fica cinza até a pessoa tentar criar a conta."""
+    secoes = [
+        ("Nome", nome, regras_nome(nome)),
+        ("E-mail", email, regras_email(email)),
+        ("Senha", senha, regras_senha(senha)),
+        ("Confirmar senha", confirmar, regras_confirmacao(senha, confirmar)),
+    ]
+    x, y = 560, 120
+    desenhar_texto("REQUISITOS", fonte_pequena, CINZA_CLARO, x, y)
+    y += 32
+    for titulo, valor, regras in secoes:
+        desenhar_texto(titulo, fonte_pequena, BRANCO, x, y)
+        y += 24
+        for rotulo, ok in regras:
+            if ok:
+                estado = "ok"
+            elif valor or tentou:
+                estado = "erro"
+            else:
+                estado = "neutro"
+            y = desenhar_regra(rotulo, estado, x, y)
+        y += 10
+
 
 def tela_cadastro():
     nome = ""
@@ -16,17 +48,43 @@ def tela_cadastro():
     campo_atual = 0
     mostrar_senha = False
     mensagem = ""
+    tentou = False
 
     campos = [
-        pygame.Rect(250, 135, 400, 42),
-        pygame.Rect(250, 220, 400, 42),
-        pygame.Rect(250, 305, 320, 42),
-        pygame.Rect(250, 390, 320, 42),
+        pygame.Rect(60, 135, 400, 42),
+        pygame.Rect(60, 220, 400, 42),
+        pygame.Rect(60, 305, 320, 42),
+        pygame.Rect(60, 390, 320, 42),
     ]
     botao_voltar = pygame.Rect(30, 25, 130, 42)
-    botao_mostrar = pygame.Rect(585, 305, 120, 42)
-    botao_mostrar_confirmar = pygame.Rect(585, 390, 120, 42)
-    botao_criar = pygame.Rect(330, 465, 240, 45)
+    botao_mostrar = pygame.Rect(395, 305, 120, 42)
+    botao_mostrar_confirmar = pygame.Rect(395, 390, 120, 42)
+    botao_criar = pygame.Rect(140, 465, 240, 45)
+
+    def tentar_cadastrar():
+        """Confere todos os campos de uma vez. Retorna True se a conta foi criada."""
+        nonlocal mensagem, tentou
+        tentou = True
+        erros = erros_cadastro(nome, email, senha, confirmar)
+        if erros:
+            mensagem = resumir_erros(erros)
+            return False
+        sucesso, mensagem = cadastrar_usuario(nome, email, senha)
+        return sucesso
+
+    def tela_sucesso():
+        tela.fill(FUNDO)
+        desenhar_centralizado("CRIAR CONTA", fonte_titulo, BRANCO, 60)
+        desenhar_mensagem("Conta criada com sucesso! Entrando na sua conta...", 290, VERDE)
+        pygame.display.flip()
+        pygame.time.wait(1100)
+
+    def concluir_cadastro():
+        """Conta criada: entra direto na área do usuário, sem pedir o login de novo."""
+        tela_sucesso()
+        sucesso, usuario = verificar_login(email, senha)
+        if sucesso:
+            tela_principal_usuario(usuario)
 
     while True:
         mouse = pygame.mouse.get_pos()
@@ -42,19 +100,9 @@ def tela_cadastro():
                 elif evento.key == pygame.K_RETURN:
                     if campo_atual < 3:
                         campo_atual += 1
-                    else:
-                        if senha != confirmar:
-                            mensagem = "As senhas não são iguais."
-                        else:
-                            sucesso, mensagem = cadastrar_usuario(nome, email, senha)
-                            if sucesso:
-                                mensagem = "Conta criada! Voltando ao menu..."
-                                tela.fill(FUNDO)
-                                desenhar_centralizado("CRIAR CONTA", fonte_titulo, BRANCO, 60)
-                                desenhar_mensagem(mensagem, 290, VERDE)
-                                pygame.display.flip()
-                                pygame.time.wait(900)
-                                return
+                    elif tentar_cadastrar():
+                        concluir_cadastro()
+                        return
                 elif evento.key == pygame.K_BACKSPACE:
                     if campo_atual == 0:
                         nome = nome[:-1]
@@ -81,17 +129,9 @@ def tela_cadastro():
                 if botao_mostrar.collidepoint(pos) or botao_mostrar_confirmar.collidepoint(pos):
                     mostrar_senha = not mostrar_senha
                 elif botao_criar.collidepoint(pos):
-                    if senha != confirmar:
-                        mensagem = "As senhas não são iguais."
-                    else:
-                        sucesso, mensagem = cadastrar_usuario(nome, email, senha)
-                        if sucesso:
-                            tela.fill(FUNDO)
-                            desenhar_centralizado("CRIAR CONTA", fonte_titulo, BRANCO, 60)
-                            desenhar_mensagem("Conta criada com sucesso!", 290, VERDE)
-                            pygame.display.flip()
-                            pygame.time.wait(900)
-                            return
+                    if tentar_cadastrar():
+                        concluir_cadastro()
+                        return
                 else:
                     for i, caixa in enumerate(campos):
                         if caixa.collidepoint(pos):
@@ -110,6 +150,7 @@ def tela_cadastro():
         botao("OCULTAR" if mostrar_senha else "MOSTRAR", botao_mostrar, mouse, fonte_menor, CINZA)
         botao("OCULTAR" if mostrar_senha else "MOSTRAR", botao_mostrar_confirmar, mouse, fonte_menor, CINZA)
         botao("CRIAR CONTA", botao_criar, mouse)
-        desenhar_texto("ENTER: próximo campo | ESC: voltar", fonte_menor, CINZA_CLARO, 250, 525)
+        desenhar_painel_requisitos(nome, email, senha, confirmar, tentou)
+        desenhar_texto("ENTER: próximo campo | ESC: voltar", fonte_menor, CINZA_CLARO, 60, 525)
         desenhar_mensagem(mensagem, 555)
         pygame.display.flip()

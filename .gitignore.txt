@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+usuarios.json
+.venv/
+venv/
+povos_usuarios.json
+*.tmp
+favoritos.json
